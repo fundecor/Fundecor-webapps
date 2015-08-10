@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>OGR2Layers</title>
+<style>
+ #map{width:100%;height:1024px;}
+</style>
+<script src="http://www.openlayers.org/api/2.13/OpenLayers.js"></script>
+<script type="text/javascript">
+var map, selectsControls
+function init(){
+	var option = {
+		projection: new OpenLayers.Projection("EPSG:900913"),
+		displayProjection: new OpenLayers.Projection("EPSG:4326")
+	};
+	map = new OpenLayers.Map('map', option);
+	var attribution = {attribution:"&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"};
+	olmapnik = new OpenLayers.Layer.OSM("OpenStreetMap Mapnik", "http://tile.openstreetmap.org/${z}/${x}/${y}.png", attribution);
+	map.addLayer(olmapnik);
+	map.setBaseLayer(olmapnik);
+	var ls= new OpenLayers.Control.LayerSwitcher(); 
+	map.addControl(ls); 
+	ls.maximizeControl(); 
+	map.addControl(new OpenLayers.Control.MousePosition());
+	map.addControl(new OpenLayers.Control.Navigation());
+	var Catastro_Forestal = new OpenLayers.Layer.WMS("Catastro Forestal WMS",
+		"http://servicios.fundecor.org:80/geoserver/BD_FUNDECOR/wms?", 
+		{
+			layers: "catfund_4_15",
+			transparent: true ,
+			format: "image/png"
+					}, {
+			isBaseLayer: false
+		});
+	map.addLayer(Catastro_Forestal);
+	
+	var aliasproj = new OpenLayers.Projection("EPSG:3857");
+	Catastro_Forestal.projection = aliasproj;
+	extent = new OpenLayers.Bounds(-85.164187,9.541568,-82.755744,11.002347).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+	map.zoomToExtent(extent);
+};
+</script>
+</head>
+<body onload="init()">
+<h1>catastro_openlayers</h1>
+<div id="map"></div>
+</body>
+</html>
